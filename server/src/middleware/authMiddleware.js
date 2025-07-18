@@ -3,14 +3,15 @@ import User from "../models/User.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    const token = req.cookies.chatApp;
+    
     if (!token) {
       res.status(401).json({
         success: false,
         message: "Unauthorized - No Token Provided.",
       });
     }
-    const decode = jwt.verify(token, procees.env.JWT_SECRET);
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
     if (!decode) {
       res.status(401).json({
         success: false,
@@ -24,7 +25,7 @@ const authMiddleware = async (req, res, next) => {
         message: "User not found",
       });
     }
-    res.user = user;
+    req.user = user;
     next();
   } catch (error) {
     console.log("Error in protectRoute middleware: ", error.message);

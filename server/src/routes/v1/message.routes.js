@@ -1,15 +1,12 @@
 import express from "express";
-import {
-  getMessages,
-  getUsersForSidebar,
-  sendMessage,
-} from "../../controller/message.controller";
+import { getMessages, getUsersForSidebar, sendMessage } from "../../controller/message.controller.js";
+
 
 const messageRouter = express.Router();
 
-router.get("/users", getUsersForSidebar);
-router.get("/:id", getMessages);
+messageRouter.get("/users", getUsersForSidebar);
+messageRouter.get("/:id", getMessages);
 
-router.post("/send/:id", sendMessage);
+messageRouter.post("/send/:id", sendMessage);
 
 export default messageRouter;

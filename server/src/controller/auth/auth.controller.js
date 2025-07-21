@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 
 export const signupController = TryCatchBlock(async (req, res) => {
   const { fullName, email, password } = req.body;
+  console.log("inside contreoller", req.body)
   if (!email || !fullName || !password) {
     throw new Error("All fields are required", 400);
   }
@@ -26,10 +27,14 @@ export const signupController = TryCatchBlock(async (req, res) => {
   if (newUser) {
     await newUser.save();
     res.status(201).json({
-      _id: newUser._id,
-      fullName: newUser.fullName,
-      email: newUser.email,
-      profilePic: newUser.profilePic,
+      success: true, 
+      message: false,
+      user: {
+        _id: newUser._id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        profilePic: newUser.profilePic,
+      }
     });
   }
 });

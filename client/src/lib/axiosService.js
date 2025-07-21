@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.BASE_URL;
+const baseUrl = "http://localhost:5000/api/v1";
+console.log("baseurl: " + baseUrl)
 console.log("base url is: " + baseUrl);
 const axiosService = axios.create({
   baseURL: baseUrl,

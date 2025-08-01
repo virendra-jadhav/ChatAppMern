@@ -4,15 +4,30 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useAuthStore } from "./store/useAuthStore";
+import { Toaster } from "react-hot-toast";
+import Navbar from "./components/Navbar";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
   return (
-    <Routes>
-      <Route path="/" element={authUser ? <Home /> : <Navigate to="/login" />} />
-        <Route path="/signup" element={!authUser ? <Signup /> : <Navigate to="/" />} />
-        <Route path="/login" element={!authUser ? <Login /> : <Navigate to="/" />} />
+    <div>
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={authUser ? <Home /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/signup"
+          element={!authUser ? <Signup /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/login"
+          element={!authUser ? <Login /> : <Navigate to="/" />}
+        />
       </Routes>
+      <Toaster />
+    </div>
   );
 };
 

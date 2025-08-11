@@ -1,5 +1,6 @@
-import TryCatchBlock from "../../helpers/try-catch-middleware";
-import cloudinary from "../../lib/cloudinary";
+import TryCatchBlock from "../../helpers/try-catch-middleware.js";
+import cloudinary from "../../lib/cloudinary.js";
+import User from "../../models/User.js";
 
 export const uploadProfilePic = TryCatchBlock(async (req, res) => {
   const { profilePic } = req.body;
@@ -8,7 +9,7 @@ export const uploadProfilePic = TryCatchBlock(async (req, res) => {
     throw new Error("Profile pic is required", 400);
   }
   const uploadResponse = await cloudinary.uploader.upload(profilePic);
-  const updatedUser = await user.findByIdAndUpdate(
+  const updatedUser = await User.findByIdAndUpdate(
     userId,
     { profilePic: uploadResponse.secure_url },
     { new: true }

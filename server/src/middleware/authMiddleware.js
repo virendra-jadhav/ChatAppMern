@@ -4,7 +4,7 @@ import User from "../models/User.js";
 const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.chatApp;
-    
+
     if (!token) {
       res.status(401).json({
         success: false,
@@ -28,7 +28,7 @@ const authMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.log("Error in protectRoute middleware: ", error.message);
+    console.error("Error in protectRoute middleware: ", error.message);
     res.status(500).json({
       success: false,
       message: "Internal server error!!",

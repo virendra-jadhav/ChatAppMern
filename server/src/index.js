@@ -8,6 +8,7 @@ import v1Router from "./routes/v1/index.js";
 import mongoose from "mongoose";
 import cors from "cors";
 import { app, server } from "./lib/socker.js";
+import path from "path";
 
 // const app = express();
 const corsOptions = {
@@ -22,7 +23,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-const PORT = process.env.PORT || "5000";
+const PORT = process.env.PORT;
+const __dirname = path.resolve();
 
 app.use("/api/v1", v1Router);
 app.get("/", (req, res) => {
@@ -32,6 +34,13 @@ app.get("/", (req, res) => {
   });
 });
 
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static(path.join(__dirname, "../client/dist")))
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"))
+  })
+}
 const connectToDB = () => {
   const mongoUrl = process.env.mongoURI || "";
   mongoose

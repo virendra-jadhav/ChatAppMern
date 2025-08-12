@@ -2,6 +2,7 @@ import TryCatchBlock from "../helpers/try-catch-middleware.js";
 import User from "../models/User.js";
 import Message from "../models/Message.js";
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../lib/socker.js";
 
 export const getUsersForSidebar = TryCatchBlock(async (req, res) => {
   const loggedInUserId = req.user._id;
@@ -32,29 +33,33 @@ export const getMessages = TryCatchBlock(async (req, res) => {
 });
 
 export const sendMessage = TryCatchBlock(async (req, res) => {
-  const {text, image} = req.body;
-  const {id: receiverId} = req.params;
+  const { text, image } = req.body;
+  const { id: receiverId } = req.params;
   const senderId = req.user._id;
 
-  if(!text && !image){
+  if (!text && !image) {
     throw new Error("Please send either text or image.");
   }
-  
+
   let imageUrl;
-  if(image){
-      const uploadImageRes = await cloudinary.uploader.upload(image);
-      imageUrl = uploadImageRes.secure_url;
+  if (image) {
+    const uploadImageRes = await cloudinary.uploader.upload(image);
+    imageUrl = uploadImageRes.secure_url;
   }
   const newMessage = new Message({
     senderId,
     receiverId,
     text,
-    image: imageUrl
-  })
+    image: imageUrl,
+  });
   await newMessage.save();
+  const receiverSocketId = getReceiverSocketId(receiverId);
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("newMessage", newMessage);
+  }
   res.status(201).json({
     success: true,
     message: "",
-    data: newMessage
-  })
+    data: newMessage,
+  });
 });

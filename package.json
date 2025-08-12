@@ -1,0 +1,17 @@
+{
+  "name": "chatappmern",
+  "version": "1.0.0",
+  "description": "Chat Application in MERN Stack.",
+  "main": "index.js",
+  "dependencies": {
+    "react-hot-toast": "^2.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+    "start": "npm run start --prefix server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -7,8 +7,9 @@ import cookieParser from "cookie-parser";
 import v1Router from "./routes/v1/index.js";
 import mongoose from "mongoose";
 import cors from "cors";
+import { app, server } from "./lib/socker.js";
 
-const app = express();
+// const app = express();
 const corsOptions = {
   origin: "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE"],
@@ -43,7 +44,7 @@ const connectToDB = () => {
     });
 };
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log("Server is running on port : ", PORT);
   connectToDB();
 });

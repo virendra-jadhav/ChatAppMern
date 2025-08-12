@@ -19,11 +19,22 @@ axiosService.interceptors.response.use(
       "error in axios",
       error.response?.data?.message || error.message
     );
-    return (
-      error.response?.data || {
-        success: false,
-        message: error.message,
-      }
+    // return error.response?.status == 413
+    //   ? {
+    //       success: false,
+    //       message: error.message,
+    //       status: error.response?.status,
+    //     }
+    //   : error.response?.data;
+
+    return Promise.reject(
+      error.response?.status == 413
+        ? {
+            success: false,
+            message: error.message,
+            status: error.response?.status,
+          }
+        : error.response?.data
     );
   }
 );

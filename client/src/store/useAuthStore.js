@@ -1,7 +1,11 @@
 import { create } from "zustand";
 import axiosService from "../lib/axiosService";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+
+const BASE_URL =
+  import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+console.log("BS", BASE_URL);
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -10,6 +14,7 @@ export const useAuthStore = create((set, get) => ({
   isUpdatingProfile: false,
   isCheckingAuth: true,
   onlineUsers: [],
+  socket: null,
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
@@ -17,6 +22,7 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosService.get("/auth/check-auth");
       if (res.success) {
         set({ authUser: res.user });
+        get().connectSocket();
       } else {
         set({ authUser: null });
         throw new Error(res.message);
@@ -34,6 +40,7 @@ export const useAuthStore = create((set, get) => ({
       if (!response.success) throw new Error({ message: response.message });
       set({ authUser: response.user });
       toast.success("Account created successfully!!");
+      get().connectSocket();
     } catch (error) {
       console.error("error ", error);
       toast.error(`Error while signing user: ${error.message}`);
@@ -45,11 +52,13 @@ export const useAuthStore = create((set, get) => ({
     set({ isLogginIn: true });
     try {
       const response = await axiosService.post("/auth/login", data);
-      if (!response.success) throw new Error({ message: response.message });
+      console.log("res", response);
+      if (!response.success) throw new Error(response.message);
       set({ authUser: response.user });
       toast.success("Logged in successfully!!");
+      get().connectSocket();
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Error in login" + error);
     } finally {
       set({ isLogginIn: false });
     }
@@ -60,22 +69,54 @@ export const useAuthStore = create((set, get) => ({
       if (!res.success) throw new Error({ message: res.message });
       set({ authUser: null });
       toast.success("Logged out successfully!!");
+      get().disconnectSocket();
     } catch (error) {
       toast.error(error.message);
     }
   },
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
+    let result = false;
     try {
       const res = await axiosService.put("/auth/update-profile", data);
       if (!res.success) throw new Error(res.message);
       set({ authUser: res.user });
+      result = true;
       toast.success(res.message);
     } catch (error) {
-      console.error("Error while updating profile pic: ", error.message);
-      toast.error(error.message);
+      if (error?.status == 413) {
+        console.error("Error while updating profile pic: ", error.message);
+        toast.error("File is to large to upload!!");
+      } else {
+        console.error("Error while updating profile pic: ", error.message);
+        toast.error(error.message);
+      }
+
+      result = false;
     } finally {
       set({ isUpdatingProfile: false });
+    }
+    return result;
+  },
+  connectSocket: () => {
+    const { authUser } = get();
+
+    if (!authUser || get().socket?.connected) return;
+
+    const socket = io(BASE_URL, {
+      query: {
+        userId: authUser._id,
+      },
+    });
+    socket.connect();
+    set({ socket: socket });
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+  },
+  disconnectSocket: () => {
+    if (get().socket?.connected) {
+      get().socket.disconnect();
     }
   },
 }));

@@ -6,11 +6,12 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOptions = {
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type"],
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL 
+    : "http://localhost:5173",
   credentials: true,
-  // Access-Control-Allow-Origin
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 
 // create socket server

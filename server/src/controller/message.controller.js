@@ -17,7 +17,7 @@ export const getUsersForSidebar = TryCatchBlock(async (req, res) => {
 });
 
 export const getMessages = TryCatchBlock(async (req, res) => {
-  const { id: userToChatId } = req.params;
+  const { userId: userToChatId } = req.params;
   const currentUserId = req.user._id;
   const messages = await Message.find({
     $or: [
@@ -34,7 +34,7 @@ export const getMessages = TryCatchBlock(async (req, res) => {
 
 export const sendMessage = TryCatchBlock(async (req, res) => {
   const { text, image } = req.body;
-  const { id: receiverId } = req.params;
+  const { receiverId: receiverId } = req.params;
   const senderId = req.user._id;
 
   if (!text && !image) {

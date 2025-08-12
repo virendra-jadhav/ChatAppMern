@@ -12,11 +12,12 @@ import path from "path";
 
 // const app = express();
 const corsOptions = {
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type"],
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL 
+    : "http://localhost:5173",
   credentials: true,
-  // Access-Control-Allow-Origin
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 app.use(cors(corsOptions));
 
@@ -26,21 +27,22 @@ app.use(cookieParser());
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-app.use("/api/v1", v1Router);
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "server is working",
-  });
-});
-
-if(process.env.NODE_ENV === 'production'){
+// Put this BEFORE your API routes
+if(process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, "../client/dist")))
+}
 
+// API routes
+app.use("/api/v1", v1Router);
+
+// Catch-all route (AFTER API routes)
+if(process.env.NODE_ENV === 'production') {
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../client", "dist", "index.html"))
   })
 }
+
+
 const connectToDB = () => {
   const mongoUrl = process.env.mongoURI || "";
   mongoose
@@ -52,6 +54,12 @@ const connectToDB = () => {
       console.error("Error while connection mongoDB: ", e);
     });
 };
+
+// Add this at the end of your index.js (before listen)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something broke!' });
+});
 
 server.listen(PORT, () => {
   console.log("Server is running on port : ", PORT);

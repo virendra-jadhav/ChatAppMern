@@ -5,8 +5,7 @@ import { getMessages, getUsersForSidebar, sendMessage } from "../../controller/m
 const messageRouter = express.Router();
 
 messageRouter.get("/users", getUsersForSidebar);
-messageRouter.get("/:id", getMessages);
-
-messageRouter.post("/send/:id", sendMessage);
+messageRouter.get("/:userId", getMessages);  // More descriptive than :id
+messageRouter.post("/send/:receiverId", sendMessage);
 
 export default messageRouter;

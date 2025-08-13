@@ -1,8 +1,8 @@
-import TryCatchBlock from "../helpers/try-catch-middleware.js";
-import User from "../models/User.js";
-import Message from "../models/Message.js";
-import cloudinary from "../lib/cloudinary.js";
-import { getReceiverSocketId, io } from "../lib/socker.js";
+import TryCatchBlock from "../../helpers/try-catch-middleware.js";
+import User from "../../models/User.js";
+import Message from "../../models/Message.js";
+import cloudinary from "../../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../../lib/socker.js";
 
 export const getUsersForSidebar = TryCatchBlock(async (req, res) => {
   const loggedInUserId = req.user._id;

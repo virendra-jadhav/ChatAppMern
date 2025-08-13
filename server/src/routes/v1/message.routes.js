@@ -1,5 +1,6 @@
 import express from "express";
-import { getMessages, getUsersForSidebar, sendMessage } from "../../controller/message.controller.js";
+import { getMessages, getUsersForSidebar, sendMessage } from "../../controller/message/message.controller";
+
 
 
 const messageRouter = express.Router();

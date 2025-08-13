@@ -98,25 +98,64 @@ export const useAuthStore = create((set, get) => ({
     }
     return result;
   },
+  // for socket
+  // connectSocket: () => {
+  //   const { authUser } = get();
+
+  //   if (!authUser || get().socket?.connected) return;
+
+  //   const socket = io(BASE_URL, {
+  //     query: {
+  //       userId: authUser._id,
+  //     },
+  //   });
+  //   socket.connect();
+  //   set({ socket: socket });
+  //   socket.on("getOnlineUsers", (userIds) => {
+  //     set({ onlineUsers: userIds });
+  //   });
+  // },
+  // disconnectSocket: () => {
+  //   if (get().socket?.connected) {
+  //     get().socket.disconnect();
+  //   }
+  // },
+
   connectSocket: () => {
     const { authUser } = get();
+    if (!authUser || get().socket?.readyState === WebSocket.OPEN) return;
 
-    if (!authUser || get().socket?.connected) return;
+    const socket = new WebSocket(`${BASE_URL}?userId=${authUser._id}`);
+    set({ socket });
+    socket.onopen = () => {
+      console.log("✅ Connected to WebSocket server");
+    };
 
-    const socket = io(BASE_URL, {
-      query: {
-        userId: authUser._id,
-      },
-    });
-    socket.connect();
-    set({ socket: socket });
-    socket.on("getOnlineUsers", (userIds) => {
-      set({ onlineUsers: userIds });
-    });
+    socket.onclose = () => {
+      console.log("❌ WebSocket disconnected");
+      toast.success("Disconnect from socket");
+    };
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      toast.error(error);
+    };
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "getOnlineUsers") {
+          set({ onlineUsers: data.users });
+        }
+        // handle other operations
+        // Forward all messages to listeners
+        window.dispatchEvent(new CustomEvent("ws-message", { detail: data }));
+      } catch (error) {
+        console.error("Invalid WS Message: ", error);
+      }
+    };
   },
   disconnectSocket: () => {
-    if (get().socket?.connected) {
-      get().socket.disconnect();
+    if (get().socket?.readyState === WebSocket.OPEN) {
+      get().socket.close();
     }
   },
 }));

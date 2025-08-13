@@ -9,6 +9,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
+  _wsHandler: null,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -52,21 +53,45 @@ export const useChatStore = create((set, get) => ({
   subscribeToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
-    const socket = useAuthStore.getState().socket;
+    // const socket = useAuthStore.getState().socket;
 
-    socket.on("newMessage", (newMessage) => {
-      const isMessageSentFromSelectedUser =
-        newMessage.senderId === selectedUser._id;
-      if (!isMessageSentFromSelectedUser) return;
+    // from socket.io
+    // socket.on("newMessage", (newMessage) => {
+    //   const isMessageSentFromSelectedUser =
+    //     newMessage.senderId === selectedUser._id;
+    //   if (!isMessageSentFromSelectedUser) return;
 
-      set({
-        messages: [...get().messages, newMessage],
-      });
-    });
+    //   set({
+    //     messages: [...get().messages, newMessage],
+    //   });
+    // });
+
+    const handler = (event) => {
+      const data = event.detail;
+      if (
+        data.type === "newMessage" &&
+        data.payload.senderId === selectedUser._id
+      ) {
+        set({ messages: [...get().messages, data.payload] });
+        // set((state) => ({
+        //   messages: [...state.messages, data.payload],
+        // }));
+      }
+    };
+    window.addEventListener("ws-message", handler);
+    set({ _wsHandler: handler });
   },
   unsubscribeFromMessages: () => {
-    const socket = useAuthStore.getState().socket;
-    socket.off("newMessage");
+    // for socket.io
+    // const socket = useAuthStore.getState().socket;
+    // socket.off("newMessage");
+
+    // wss
+    const handler = get()._wsHandler;
+    if (handler) {
+      window.removeEventListener("ws-message", handler);
+      set({ _wsHandler: null });
+    }
   },
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));

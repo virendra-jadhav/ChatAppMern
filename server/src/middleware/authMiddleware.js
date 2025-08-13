@@ -29,7 +29,7 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Error in protectRoute middleware: ", error.message);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Internal server error!!",
     });

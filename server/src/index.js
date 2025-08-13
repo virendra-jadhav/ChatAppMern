@@ -7,17 +7,18 @@ import cookieParser from "cookie-parser";
 import v1Router from "./routes/v1/index.js";
 import mongoose from "mongoose";
 import cors from "cors";
-import { app, server } from "./lib/socker.js";
+import { app, server } from "./lib/socket-wss.js";
 import path from "path";
 
 // const app = express();
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
-    : "http://localhost:5173",
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.FRONTEND_URL
+      : "http://localhost:5173",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(cors(corsOptions));
 
@@ -28,20 +29,19 @@ const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
 // Put this BEFORE your API routes
-if(process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, "../client/dist")))
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
 }
 
 // API routes
 app.use("/api/v1", v1Router);
 
 // Catch-all route (AFTER API routes)
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"))
-  })
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+  });
 }
-
 
 const connectToDB = () => {
   const mongoUrl = process.env.mongoURI || "";
@@ -58,7 +58,7 @@ const connectToDB = () => {
 // Add this at the end of your index.js (before listen)
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!' });
+  res.status(500).json({ error: "Something broke!" });
 });
 
 server.listen(PORT, () => {

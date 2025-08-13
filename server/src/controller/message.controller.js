@@ -2,7 +2,12 @@ import TryCatchBlock from "../helpers/try-catch-middleware.js";
 import User from "../models/User.js";
 import Message from "../models/Message.js";
 import cloudinary from "../lib/cloudinary.js";
-import { getReceiverSocketId, io } from "../lib/socker.js";
+// import { getReceiverSocketId, io } from "../lib/socket-io.js";
+import {
+  getReceiverSocketId,
+  sendToSingleUser,
+  wss,
+} from "../lib/socket-wss.js";
 
 export const getUsersForSidebar = TryCatchBlock(async (req, res) => {
   const loggedInUserId = req.user._id;
@@ -53,10 +58,12 @@ export const sendMessage = TryCatchBlock(async (req, res) => {
     image: imageUrl,
   });
   await newMessage.save();
-  const receiverSocketId = getReceiverSocketId(receiverId);
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit("newMessage", newMessage);
-  }
+
+  sendToSingleUser(receiverId, "newMessage", newMessage);
+  // const receiverSocketId = getReceiverSocketId(receiverId);
+  // if (receiverSocketId) {
+  //   io.to(receiverSocketId).emit("newMessage", newMessage);
+  // }
   res.status(201).json({
     success: true,
     message: "",

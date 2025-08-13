@@ -5,7 +5,7 @@ A real-time chat application supporting both **WebSocket (ws package)** and **So
 ---
 
 ## 🚀 Preview
-[Live App](https://chatappviren.onrender.com/login) https://chatappviren.onrender.com
+Live App : https://chatappviren.onrender.com
 
 ---
 

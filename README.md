@@ -161,5 +161,3 @@ build/
 - Responsive UI with TailwindCSS + DaisyUI
 - Serve frontend from Express backend
 ---
-
-Do you want me to also **add an architecture diagram** showing how frontend, backend, ws, and Socket.IO interact? That would make your README even more professional.

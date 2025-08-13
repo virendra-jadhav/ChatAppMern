@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.BASE_URL;
-console.log("base url is: " + baseUrl);
+const baseUrl = "http://localhost:5000/api/v1";
 const axiosService = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
@@ -11,4 +10,32 @@ const axiosService = axios.create({
     // allow cross origin site]
   },
 });
+
+axiosService.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    // return Promise.reject(error);
+    console.error(
+      "error in axios",
+      error.response?.data?.message || error.message
+    );
+    // return error.response?.status == 413
+    //   ? {
+    //       success: false,
+    //       message: error.message,
+    //       status: error.response?.status,
+    //     }
+    //   : error.response?.data;
+
+    return Promise.reject(
+      error.response?.status == 413
+        ? {
+            success: false,
+            message: error.message,
+            status: error.response?.status,
+          }
+        : error.response?.data
+    );
+  }
+);
 export default axiosService;

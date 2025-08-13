@@ -1,13 +1,23 @@
 import express from "express";
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env' }); // Explicit path
+import dotenv from "dotenv";
+dotenv.config({ path: ".env" }); // Explicit path
 import cookieParser from "cookie-parser";
 
 // imported files
 import v1Router from "./routes/v1/index.js";
 import mongoose from "mongoose";
+import cors from "cors";
+import { app, server } from "./lib/socker.js";
 
-const app = express();
+// const app = express();
+const corsOptions = {
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type"],
+  credentials: true,
+  // Access-Control-Allow-Origin
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -23,7 +33,6 @@ app.get("/", (req, res) => {
 });
 
 const connectToDB = () => {
-  console.log("mongo url: " , process.env.mongoURI)
   const mongoUrl = process.env.mongoURI || "";
   mongoose
     .connect(mongoUrl)
@@ -35,7 +44,7 @@ const connectToDB = () => {
     });
 };
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log("Server is running on port : ", PORT);
   connectToDB();
 });

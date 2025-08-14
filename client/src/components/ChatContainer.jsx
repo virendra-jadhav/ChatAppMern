@@ -5,16 +5,14 @@ import ChatHeader from "./ChatHeader";
 import MessageSkeleton from "./skeletons/MessageSkeleton.jsx";
 import MessageInput from "./MessageInput.jsx";
 import { formatMessageTime } from "../lib/utils.js";
+import {
+  subscribeToMessages,
+  unsubscribeFromMessages,
+} from "../lib/socketwssutil.js";
 
 const ChatContainer = () => {
-  const {
-    messages,
-    getMessages,
-    isMessagesLoading,
-    selectedUser,
-    subscribeToMessages,
-    unsubscribeFromMessages,
-  } = useChatStore();
+  const { messages, getMessages, isMessagesLoading, selectedUser } =
+    useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 

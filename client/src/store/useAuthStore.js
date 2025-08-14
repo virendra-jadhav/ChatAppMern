@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axiosService from "../lib/axiosService";
 import toast from "react-hot-toast";
-import { io } from "socket.io-client";
+import { connectSocket, disconnectSocket } from "../lib/socketwssutil";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
@@ -22,7 +22,7 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosService.get("/auth/check-auth");
       if (res.success) {
         set({ authUser: res.user });
-        get().connectSocket();
+        connectSocket();
       } else {
         set({ authUser: null });
         throw new Error(res.message);
@@ -40,7 +40,7 @@ export const useAuthStore = create((set, get) => ({
       if (!response.success) throw new Error({ message: response.message });
       set({ authUser: response.user });
       toast.success("Account created successfully!!");
-      get().connectSocket();
+      connectSocket();
     } catch (error) {
       console.error("error ", error);
       toast.error(`Error while signing user: ${error.message}`);
@@ -56,7 +56,7 @@ export const useAuthStore = create((set, get) => ({
       if (!response.success) throw new Error(response.message);
       set({ authUser: response.user });
       toast.success("Logged in successfully!!");
-      get().connectSocket();
+      connectSocket();
     } catch (error) {
       toast.error("Error in login" + error);
     } finally {
@@ -69,7 +69,7 @@ export const useAuthStore = create((set, get) => ({
       if (!res.success) throw new Error({ message: res.message });
       set({ authUser: null });
       toast.success("Logged out successfully!!");
-      get().disconnectSocket();
+      disconnectSocket();
     } catch (error) {
       toast.error(error.message);
     }
@@ -121,41 +121,47 @@ export const useAuthStore = create((set, get) => ({
   //   }
   // },
 
-  connectSocket: () => {
-    const { authUser } = get();
-    if (!authUser || get().socket?.readyState === WebSocket.OPEN) return;
+  // connectSocket: () => {
+  //   const { authUser } = get();
+  //   if (!authUser || get().socket?.readyState === WebSocket.OPEN) return;
 
-    const socket = new WebSocket(`${BASE_URL}?userId=${authUser._id}`);
-    set({ socket });
-    socket.onopen = () => {
-      console.log("✅ Connected to WebSocket server");
-    };
+  //   const socket = new WebSocket(`${BASE_URL}?userId=${authUser._id}`);
+  //   set({ socket });
+  //   socket.onopen = () => {
+  //     console.log("✅ Connected to WebSocket server");
+  //   };
 
-    socket.onclose = () => {
-      console.log("❌ WebSocket disconnected");
-      toast.success("Disconnect from socket");
-    };
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      toast.error(error);
-    };
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === "getOnlineUsers") {
-          set({ onlineUsers: data.users });
-        }
-        // handle other operations
-        // Forward all messages to listeners
-        window.dispatchEvent(new CustomEvent("ws-message", { detail: data }));
-      } catch (error) {
-        console.error("Invalid WS Message: ", error);
-      }
-    };
+  //   socket.onclose = () => {
+  //     console.log("❌ WebSocket disconnected");
+  //     toast.success("Disconnect from socket");
+  //   };
+  //   socket.onerror = (error) => {
+  //     console.error("WebSocket error:", error);
+  //     toast.error(error);
+  //   };
+  //   socket.onmessage = (event) => {
+  //     try {
+  //       const data = JSON.parse(event.data);
+  //       if (data.type === "getOnlineUsers") {
+  //         set({ onlineUsers: data.users });
+  //       }
+  //       // handle other operations
+  //       // Forward all messages to listeners
+  //       window.dispatchEvent(new CustomEvent("ws-message", { detail: data }));
+  //     } catch (error) {
+  //       console.error("Invalid WS Message: ", error);
+  //     }
+  //   };
+  // },
+  // disconnectSocket: () => {
+  //   if (get().socket?.readyState === WebSocket.OPEN) {
+  //     get().socket.close();
+  //   }
+  // },
+  setSocket: (socket) => {
+    set({ socket: socket });
   },
-  disconnectSocket: () => {
-    if (get().socket?.readyState === WebSocket.OPEN) {
-      get().socket.close();
-    }
+  setOnlineUsers: (users) => {
+    set({ onlineUsers: users });
   },
 }));

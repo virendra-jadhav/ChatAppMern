@@ -50,48 +50,54 @@ export const useChatStore = create((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
-  subscribeToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
-    // const socket = useAuthStore.getState().socket;
+  // subscribeToMessages: () => {
+  //   const { selectedUser } = get();
+  //   if (!selectedUser) return;
+  //   // const socket = useAuthStore.getState().socket;
 
-    // from socket.io
-    // socket.on("newMessage", (newMessage) => {
-    //   const isMessageSentFromSelectedUser =
-    //     newMessage.senderId === selectedUser._id;
-    //   if (!isMessageSentFromSelectedUser) return;
+  //   // from socket.io
+  //   // socket.on("newMessage", (newMessage) => {
+  //   //   const isMessageSentFromSelectedUser =
+  //   //     newMessage.senderId === selectedUser._id;
+  //   //   if (!isMessageSentFromSelectedUser) return;
 
-    //   set({
-    //     messages: [...get().messages, newMessage],
-    //   });
-    // });
+  //   //   set({
+  //   //     messages: [...get().messages, newMessage],
+  //   //   });
+  //   // });
 
-    const handler = (event) => {
-      const data = event.detail;
-      if (
-        data.type === "newMessage" &&
-        data.payload.senderId === selectedUser._id
-      ) {
-        set({ messages: [...get().messages, data.payload] });
-        // set((state) => ({
-        //   messages: [...state.messages, data.payload],
-        // }));
-      }
-    };
-    window.addEventListener("ws-message", handler);
+  //   const handler = (event) => {
+  //     const data = event.detail;
+  //     if (
+  //       data.type === "newMessage" &&
+  //       data.payload.senderId === selectedUser._id
+  //     ) {
+  //       set({ messages: [...get().messages, data.payload] });
+  //       // set((state) => ({
+  //       //   messages: [...state.messages, data.payload],
+  //       // }));
+  //     }
+  //   };
+  //   window.addEventListener("ws-message", handler);
+  //   set({ _wsHandler: handler });
+  // },
+  // unsubscribeFromMessages: () => {
+  //   // for socket.io
+  //   // const socket = useAuthStore.getState().socket;
+  //   // socket.off("newMessage");
+
+  //   // wss
+  //   const handler = get()._wsHandler;
+  //   if (handler) {
+  //     window.removeEventListener("ws-message", handler);
+  //     set({ _wsHandler: null });
+  //   }
+  // },
+  setSelectedUser: (selectedUser) => set({ selectedUser }),
+  setMessages: (newMessages) => {
+    set({ messages: [...get().messages, newMessages] });
+  },
+  setWsHandler: (handler) => {
     set({ _wsHandler: handler });
   },
-  unsubscribeFromMessages: () => {
-    // for socket.io
-    // const socket = useAuthStore.getState().socket;
-    // socket.off("newMessage");
-
-    // wss
-    const handler = get()._wsHandler;
-    if (handler) {
-      window.removeEventListener("ws-message", handler);
-      set({ _wsHandler: null });
-    }
-  },
-  setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));

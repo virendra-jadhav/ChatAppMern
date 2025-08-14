@@ -1,4 +1,3 @@
-
 import TryCatchBlock from "../../helpers/try-catch-middleware.js";
 import User from "../../models/User.js";
 import Message from "../../models/Message.js";
@@ -48,6 +47,7 @@ export const sendMessage = TryCatchBlock(async (req, res) => {
     imageUrl = uploadImageRes.secure_url;
   }
   const newMessage = new Message({
+    type: "private",
     senderId,
     receiverId,
     text,

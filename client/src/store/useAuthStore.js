@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axiosService from "../lib/axiosService";
 import toast from "react-hot-toast";
-import { connectSocket, disconnectSocket } from "../lib/socketwssutil";
+import { connectSocket, disconnectSocket } from "../lib/socketwssUtil";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";

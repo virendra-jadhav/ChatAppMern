@@ -5,10 +5,12 @@ import ChatHeader from "./ChatHeader";
 import MessageSkeleton from "./skeletons/MessageSkeleton.jsx";
 import MessageInput from "./MessageInput.jsx";
 import { formatMessageTime } from "../lib/utils.js";
-import {
-  subscribeToMessages,
-  unsubscribeFromMessages,
-} from "../lib/socketwssutil.js";
+// import {
+//   subscribeToMessages,
+//   unsubscribeFromMessages,
+// } from "../lib/socketwssutil.js";
+
+import {subscribeToMessages, unsubscribeFromMessages} from "../lib/socketwssUtil.js"
 
 const ChatContainer = () => {
   const { messages, getMessages, isMessagesLoading, selectedUser } =

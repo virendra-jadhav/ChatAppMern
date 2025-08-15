@@ -7,6 +7,34 @@ const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
+  // const handleFileChange = (e) => {
+  //   const selected = e.target.files[0];
+  //   if (selected) {
+  //     if (selected.size > 10 * 1024 * 1024) {
+  //       alert("File size must be under 10MB");
+  //       return;
+  //     }
+  //     setFile(selected);
+  //     setPreview(URL.createObjectURL(selected));
+  //   }
+  // };
+
+  // const handleUpload = async () => {
+  //   if (!file) return alert("Please select a file first");
+
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+
+  //   try {
+  //     const res = await axios.post("http://localhost:5000/upload", formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+  //     setUploadedUrl(res.data.url);
+  //   } catch (err) {
+  //     alert(err.response?.data?.error || "Upload failed");
+  //   }
+  // };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;

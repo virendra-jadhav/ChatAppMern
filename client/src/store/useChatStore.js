@@ -10,6 +10,7 @@ export const useChatStore = create((set, get) => ({
   isUsersLoading: false,
   isMessagesLoading: false,
   _wsHandler: null,
+  isRoomMessagesLoading: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -99,5 +100,8 @@ export const useChatStore = create((set, get) => ({
   },
   setWsHandler: (handler) => {
     set({ _wsHandler: handler });
+  },
+   getRoomMessages: (roomId) => {
+
   },
 }));

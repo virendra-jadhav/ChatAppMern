@@ -2,11 +2,13 @@ import { X } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { useTypingSingleUserHook } from "../hooks/useTypingSingleUserHook";
+import { useRoomStore } from "../store/useRoomStore";
 
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const [isTyping, handleTyping] = useTypingSingleUserHook();
+  const {setSelectedRoom, setIsExploringRoom} = useRoomStore();
 
   return (
     <div className="p-2.5 border-b border-base-300">
@@ -38,7 +40,13 @@ const ChatHeader = () => {
         </div>
 
         {/* Close button */}
-        <button onClick={() => setSelectedUser(null)}>
+        <button onClick={() => {
+          
+          setSelectedUser(null)
+
+              setSelectedRoom(null)
+              setIsExploringRoom(false)
+        }}>
           <X />
         </button>
       </div>

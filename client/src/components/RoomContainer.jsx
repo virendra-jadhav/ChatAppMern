@@ -5,31 +5,30 @@ import ChatHeader from "./ChatHeader";
 import MessageSkeleton from "./skeletons/MessageSkeleton.jsx";
 import MessageInput from "./MessageInput.jsx";
 import { formatMessageTime } from "../lib/utils.js";
-// import {
-//   subscribeToMessages,
-//   unsubscribeFromMessages,
-// } from "../lib/socketwssutil.js";
 
 import {subscribeToMessages, unsubscribeFromMessages} from "../lib/socketwssUtil.js"
+import { useRoomStore } from "../store/useRoomStore.js";
+import RoomHeader from "./RoomHeader.jsx"
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser } =
-    useChatStore();
+  // const { messages, getMessages, isMessagesLoading, selectedUser } =
+    // useChatStore();
+    const {selectedRoom} = useRoomStore();
+    const {isRoomMessagesLoading, getRoomMessages, messages} = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-  if(!selectedUser) return;
 
   useEffect(() => {
-    getMessages(selectedUser._id);
+    getRoomMessages(selectedRoom?._id);
 
-    subscribeToMessages();
+    // subscribeToMessages();
 
-    return () => unsubscribeFromMessages();
+    // return () => unsubscribeFromMessages();
   }, [
-    selectedUser._id,
-    getMessages,
-    subscribeToMessages,
-    unsubscribeFromMessages,
+    selectedRoom?._id,
+    getRoomMessages,
+    // subscribeToMessages,
+    // unsubscribeFromMessages,
   ]);
 
   useEffect(() => {
@@ -37,11 +36,11 @@ const ChatContainer = () => {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
-  if (isMessagesLoading) {
+  if(!selectedRoom) return;
+  if (isRoomMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col overflow-auto">
-        <ChatHeader />
+        <RoomHeader />
         <MessageSkeleton />
         <MessageInput />
       </div>
@@ -53,7 +52,7 @@ const ChatContainer = () => {
     <div className="flex-1 flex flex-col h-full">
     {/* Header */}
     <div className="shrink-0">
-      <ChatHeader />
+       <RoomHeader />
     </div>
 
     {/* Messages */}
@@ -72,7 +71,7 @@ const ChatContainer = () => {
                 src={
                   message.senderId === authUser._id
                     ? authUser.profilePic || "/avatar.png"
-                    : selectedUser.profilePic || "/avatar.png"
+                    :  "/avatar.png"
                 }
                 alt="profile pic"
               />
@@ -101,51 +100,6 @@ const ChatContainer = () => {
     <div className="shrink-0">
       <MessageInput />
     </div>
-        {/* <div className="flex-1 flex flex-col overflow-auto">
-      <ChatHeader />
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            className={`chat ${
-              message.senderId === authUser._id ? "chat-end" : "chat-start"
-            }`}
-            ref={messageEndRef}
-          >
-            <div className=" chat-image avatar">
-              <div className="size-10 rounded-full border">
-                <img
-                  src={
-                    message.senderId === authUser._id
-                      ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
-                  }
-                  alt="profile pic"
-                />
-              </div>
-            </div>
-            <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
-                {formatMessageTime(message.createdAt)}
-              </time>
-            </div>
-            <div className="chat-bubble flex flex-col">
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="sm:max-w-[200px] rounded-md mb-2"
-                />
-              )}
-              {message.text && <p>{message.text}</p>}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <MessageInput />
-    </div> */}
   </div>
     
   );

@@ -29,7 +29,7 @@ const RoomSidebar = () => {
       Explore
     </button>
 
-    <div className="overflow-y-auto flex-1">
+    <div className="overflow-y-auto flex-1 mb-10">
     {isGetRoomsForUser ?
     <div>Getting Rooms ...</div>
         :

@@ -11,6 +11,10 @@ const roomSchema = mongoose.Schema(
       type: String,
       default: "",
     },
+    description: {
+      type: String,
+      default: "",
+    },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,

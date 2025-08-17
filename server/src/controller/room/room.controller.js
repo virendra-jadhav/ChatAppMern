@@ -1,9 +1,12 @@
 import TryCatchBlock from "../../helpers/try-catch-middleware.js";
 import cloudinary, { uploadToCloudinary } from "../../lib/cloudinary.js";
+import { populateRoomsView, populateRoomView } from "../../lib/populateRoom.js";
+import { createRoomMessageToAllUser, deleteRoomEvent, updateRoomEvent } from "../../lib/socket-wss.js";
+
 import Room from "../../models/Room.js";
 
 export const createRoomController = TryCatchBlock(async (req, res) => {
-    const {name, logo} = req.body;
+    const {name, logo, description} = req.body;
     if(!name){
         throw new Error("Room name cannot be blank.")
     }
@@ -12,29 +15,31 @@ export const createRoomController = TryCatchBlock(async (req, res) => {
     const newRoom = new Room({
         name,
         logo,
+        description,
         users: [userId],
         admins: [userId]
     })
     await newRoom.save()
+    // await newRoom.populate("users", "fullName email profilePic");
+    // await newRoom.populate("admins", "fullName email profilePic");
+    const populateRoom = await populateRoomView(newRoom);
+    createRoomMessageToAllUser(populateRoom, "newRoomCreateEvent", populateRoom)
 
     res.status(201).json({
         success: true,
         message: "Room create successfully!!",
-        room: {
-            name: newRoom.name,
-            logo: newRoom.logo,
-            users: newRoom.users,
-            admins: newRoom.admins
-        }
+        room: populateRoom
     })
 });
 
 export const getAllRoomsController = TryCatchBlock(async (req, res) => {
     const rooms = await Room.find({});
+    const populateRooms = await populateRoomsView(rooms);
+    
     res.status(200).json({
         success: true,
         message: "",
-        rooms: rooms
+        rooms: populateRooms
     })
 });
 
@@ -47,10 +52,11 @@ export const getRoomController = TryCatchBlock(async (req, res) => {
     if(!room){
         throw new Error("Invalid Room")
     }
+    const populateRoom = await populateRoomView(room);
     res.status(200).json({
         success: true,
         message: "",
-        room: room
+        room: populateRoom
     })
 });
 
@@ -61,21 +67,21 @@ export const getAllRoomsForUserController = TryCatchBlock(async (req, res) => {
     if(!userId) {
         throw new Error("UserId is Required.")
     }
-    
     const rooms = await Room.find({ users: userId })
-      .populate("users", "fullName email profilePic") // select only needed fields
-      .populate("admins", "fullName email profilePic");
-
+    //   .populate("users", "fullName email profilePic") // select only needed fields
+    //   .populate("admins", "fullName email profilePic");
+    const populatedRooms = await populateRoomsView(rooms);
     res.status(200).json({
         success: true,
         message: "",
-        rooms: rooms
+        rooms: populatedRooms
     })
 })
 
 export const updateRoomController = TryCatchBlock(async (req, res) => {
-    const {name, users, admins, logo} = req.body;
+    const {name, users, admins, logo, description} = req.body;
     const {roomId} = req.params;
+    const userId = req.user._id;
     if(!roomId){
         throw new Error("RoomId is Required.")
     }
@@ -85,26 +91,29 @@ export const updateRoomController = TryCatchBlock(async (req, res) => {
     const room = await Room.findByIdAndUpdate(roomId,
     { 
         name: name,  
-        users,
-        admins,
+        description,
         logo
     },
     { new: true })
-    .populate("users", "fullName email profilePic")
-      .populate("admins", "fullName email profilePic");
+    // .populate("users", "fullName email profilePic")
+    //   .populate("admins", "fullName email profilePic");
+
     
     if(!room){
         throw new Error("Room is not exists.")
     }
+    const populateRoom = await populateRoomView(room);
+    updateRoomEvent(userId, "updateRoomEvent", populateRoom);
     res.status(200).json({
         success: true,
         message: "Room update successfully!!",
-        room: room
+        room: populateRoom
     })
 });
 
 export const deleteRoomController = TryCatchBlock(async (req, res) => {
     const {roomId} = req.params;
+    const userId = req.user._id;
     if(!roomId){
         throw new Error("Room Id is required.")
     }
@@ -112,15 +121,20 @@ export const deleteRoomController = TryCatchBlock(async (req, res) => {
     if(!room){
         throw new Error("Room is not exists.")
     }
+    const rooms = await Room.find({})
+    const populatedRooms = await populateRoomsView(rooms);
+    deleteRoomEvent(rooms, "deleteRoomEvent", populatedRooms);
     res.status(200).json({
         success: true,
-        message: "Room deleted successfully!"
+        message: "Room deleted successfully!",
+        rooms: populatedRooms
     })
 });
 
 export const joinRoomController = TryCatchBlock(async (req, res) => {
     const {roomId} = req.params;
     const userId = req.user._id;
+    // const user = req.user;
     if(!roomId){
         throw new Error("Room Id is required.")
     }
@@ -138,11 +152,12 @@ export const joinRoomController = TryCatchBlock(async (req, res) => {
     // add user to rooms
     room.users.push(userId);
     await room.save();
+    const populateRoom = await populateRoomView(room);
 
     res.status(200).json({
         success: true,
         message: "Room joined successfully!!",
-        room: room
+        room: populateRoom
     })
 })
 
@@ -160,13 +175,24 @@ export const removeRoomController = TryCatchBlock(async (req, res) => {
     if(!alreadyInRoom){
         throw new Error("User is not exist in room.")
     }
-    room.users = room.users.filter(id => id.toString() !== userId.toString())
-    await room.save();
+     room.users = room.users.filter(id => id.toString() !== userId.toString())
+    let roomUserLength = room.users?.length || 0;
+    if(roomUserLength > 0){
+        await room.save();
+    } else {
+       await Room.deleteOne({_id: room._id})
+    }
+    
+    const joinedRooms = await Room.find({ users: userId })
+    const rooms = await Room.find({  })
+    const populatedRooms = await populateRoomsView(rooms);
+    const populatedJoinedRooms = await populateRoomsView(joinedRooms);
 
     res.status(200).json({
         success: true,
-        message: `Userj ${req.user.fullName} is left from room`,
-        room: room
+        message: `User ${req.user.fullName} is left from room`,
+        rooms: populatedRooms,
+        joinedRooms: populatedJoinedRooms
     })
 })
 
@@ -189,10 +215,11 @@ export const updateRoomLogoController = TryCatchBlock(async (req, res) => {
 
     room.logo = uploadLogoRes.secure_url;
     await room.save();
+    const populateRoom = await populateRoomView(room)
 
     res.status(200).json({
         success: true,
         message: "Logo updated successfully!!",
-        room
+        room: populateRoom
     });
 })

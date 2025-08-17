@@ -18,6 +18,13 @@ const ChatContainer = () => {
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
+  const getSenderDetails = (message, authUser, users) => {
+  if (message.senderId === authUser._id) {
+    return authUser;
+  }
+  return users.find((u) => u._id === message.senderId);
+};
+
   useEffect(() => {
     getRoomMessages(selectedRoom?._id);
 
@@ -56,8 +63,13 @@ const ChatContainer = () => {
     </div>
 
     {/* Messages */}
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {messages.map((message) => (
+    <div className="flex-1 overflow-y-auto p-4 space-y-4 mb-10">
+      {messages.map((message) => {
+        const sender = getSenderDetails(message, authUser, selectedRoom.users);
+        // const isOwnMessage = message.senderId === authUser._id;
+
+        return (
+     
         <div
           key={message._id}
           className={`chat ${
@@ -68,12 +80,14 @@ const ChatContainer = () => {
           <div className="chat-image avatar">
             <div className="size-10 rounded-full border">
               <img
-                src={
-                  message.senderId === authUser._id
-                    ? authUser.profilePic || "/avatar.png"
-                    :  "/avatar.png"
-                }
-                alt="profile pic"
+                // src={
+                  // message.senderId === authUser._id
+                    // ? authUser.profilePic || "/avatar.png"
+                    // :  "/avatar.png"
+                // }
+                // alt="profile pic"
+                src={sender?.profilePic || "/avatar.png"}
+                  alt={sender?.fullName || "User"}
               />
             </div>
           </div>
@@ -93,7 +107,8 @@ const ChatContainer = () => {
             {message.text && <p>{message.text}</p>}
           </div>
         </div>
-      ))}
+        )
+    })}
     </div>
 
     {/* Input */}

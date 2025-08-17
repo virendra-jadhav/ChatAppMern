@@ -87,4 +87,52 @@ export function sendToSingleUser(receiverId, event, payload) {
   }
 }
 
+export function createRoomMessageToAllUser(room, event, payload) {
+  // Get all connected userIds
+  const allClients = Array.from(userSocketMap.keys());
+
+  // Exclude all room users
+  const excludedUsers = room?.users?.map((u) => u.toString()) || [];
+  const targetUsers = allClients.filter(
+    (userId) => !excludedUsers.includes(userId.toString())
+  );
+
+  // Get sockets for target users
+  const clients = targetUsers.map((userId) => userSocketMap.get(userId));
+
+  // Send event
+  clients.forEach((client) => {
+    if (client && client.readyState === client.OPEN) {
+      client.send(JSON.stringify({ type: event, payload }));
+    }
+  });
+}
+
+export function updateRoomEvent(clientId, event, payload) {
+  // Get all connected userIds
+  const allClients = Array.from(userSocketMap.keys());
+
+  const clients = allClients
+    .filter((userId) => userId !== clientId)
+    .map((client) => userSocketMap.get(client));
+  // Send event
+  clients.forEach((client) => {
+    if (client && client.readyState === client.OPEN) {
+      client.send(JSON.stringify({ type: event, payload }));
+    }
+  });
+}
+export function deleteRoomEvent(rooms, event, payload) {
+  // Get all connected userIds
+  const allClients = Array.from(userSocketMap.keys());
+
+  const clients = allClients.map((client) => userSocketMap.get(client));
+  // Send event
+  clients.forEach((client) => {
+    if (client && client.readyState === client.OPEN) {
+      client.send(JSON.stringify({ type: event, payload }));
+    }
+  });
+}
+
 export { wss, app, server };

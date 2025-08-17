@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import TryCatchBlock from "../helpers/try-catch-middleware.js";
+import { uploadToCloudinary } from "../lib/cloudinary.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -35,5 +37,7 @@ const authMiddleware = async (req, res, next) => {
     });
   }
 };
+
+
 
 export default authMiddleware;

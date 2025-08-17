@@ -15,6 +15,8 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: true,
   onlineUsers: [],
   socket: null,
+  activeTab: 'chat',
+  setActiveTab: (value) => set({activeTab: value}),
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
@@ -52,7 +54,7 @@ export const useAuthStore = create((set, get) => ({
     set({ isLogginIn: true });
     try {
       const response = await axiosService.post("/auth/login", data);
-      console.log("res", response);
+      
       if (!response.success) throw new Error(response.message);
       set({ authUser: response.user });
       toast.success("Logged in successfully!!");
@@ -164,4 +166,18 @@ export const useAuthStore = create((set, get) => ({
   setOnlineUsers: (users) => {
     set({ onlineUsers: users });
   },
+  uploadFile: async (formData) => {
+    try{
+      const response = await axiosService.post("/upload-image",formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+      if (!response.success) throw new Error(response.message);
+      // set({ authUser: response.user });
+      toast.success("File uploaded successfully!!");
+      return response;
+    } catch(error){
+      console.error("error ", error);
+      toast.error(`Error while uploading file: ${error.message}`);
+    }
+  }
 }));

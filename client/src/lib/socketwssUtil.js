@@ -2,8 +2,11 @@ import toast from "react-hot-toast";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import {
+  deleteRoomEventHandler,
   newMessageEventHandler,
+  newRoomCreateEventHandler,
   onlineUsersEventHandler,
+  updateRoomEventHandler,
 } from "./wssMessageUtil";
 
 const BASE_URL =
@@ -14,6 +17,9 @@ const BASE_URL =
 const handlers = {
   getOnlineUsers: (e) => onlineUsersEventHandler(e.users),
   newMessage: (e) => newMessageEventHandler(e.payload),
+  newRoomCreateEvent: (e) => newRoomCreateEventHandler(e.payload),
+  updateRoomEvent: (e) => updateRoomEventHandler(e.payload),
+  deleteRoomEvent: (e) => deleteRoomEventHandler(e.payload),
   // window.dispatchEvent(new CustomEvent("ws-message", { detail: p })),
 
   // ...more
@@ -53,6 +59,7 @@ function onMessageHandler(event) {
     // window.dispatchEvent(new CustomEvent("ws-message", { detail: payload }));
 
     // handlers[payload.type]?.(payload);
+    console.log("message event : ", event)
     handlers[payload.type]?.(payload);
   } catch (error) {
     console.error("Invalid WS Message: ", error);

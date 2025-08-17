@@ -51,6 +51,21 @@ export const useChatStore = create((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
+  sendMessageToRoom: async (roomId, messageData) => {
+   const {  messages } = get();
+    try {
+      const res = await axiosService.post(
+        `messages/send/room/${roomId}`,
+        messageData
+      );
+      if (!res.success) throw new Error(res.message);
+      set({ messages: [...messages, res.data] });
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      set({ isMessagesLoading: false });
+    }
+  },
   // subscribeToMessages: () => {
   //   const { selectedUser } = get();
   //   if (!selectedUser) return;
@@ -101,7 +116,20 @@ export const useChatStore = create((set, get) => ({
   setWsHandler: (handler) => {
     set({ _wsHandler: handler });
   },
-   getRoomMessages: (roomId) => {
-
+   getRoomMessages: async (roomId) => {
+    set({isRoomMessagesLoading: true})
+    try{
+      const res = await axiosService.get(`/messages/room/${roomId}`);
+      console.log("res", res)
+      if (!res.success) throw new Error({ message: res.message });
+      
+      set({ messages: res.messages});
+      // toast.success("");
+    }catch(error){
+      console.error("error ", error);
+      toast.error(`Error while getting room messages : ${error.message}`);
+    } finally{
+      set({isRoomMessagesLoading: false})
+    }
   },
 }));

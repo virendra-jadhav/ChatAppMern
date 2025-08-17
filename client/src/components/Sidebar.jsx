@@ -11,10 +11,11 @@ const Sidebar = () => {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, isGetRoomsForUser} =
     useChatStore();
-    const [activeTab, setActiveTab] = useState("chat"); // chat | room
-  const { onlineUsers } = useAuthStore();
+    // const [activeTab, setActiveTab] = useState("chat"); // chat | room
+  const { onlineUsers, activeTab, setActiveTab } = useAuthStore();
   const {setSelectedRoom, setIsExploringRoom} = useRoomStore();
   const navigate = useNavigate();
+
   
   useEffect(() => {
     getUsers();

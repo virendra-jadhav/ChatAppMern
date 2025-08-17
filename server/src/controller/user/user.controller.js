@@ -1,5 +1,5 @@
 import TryCatchBlock from "../../helpers/try-catch-middleware.js";
-import cloudinary from "../../lib/cloudinary.js";
+import cloudinary, { uploadToCloudinary } from "../../lib/cloudinary.js";
 import User from "../../models/User.js";
 
 export const uploadProfilePic = TryCatchBlock(async (req, res) => {
@@ -25,3 +25,17 @@ export const uploadProfilePic = TryCatchBlock(async (req, res) => {
     },
   });
 });
+
+export const uploadImage = TryCatchBlock(async (req, res) => {
+  console.log("inside controller", req.file)
+   if (!req.file) {
+        throw new Error("No file uploaded!");
+    }
+    const uploadFileResponse = await uploadToCloudinary(req.file.buffer);
+
+    res.status(200).json({
+        success: true,
+        message: "Logo updated successfully!!",
+        fileUrl: uploadFileResponse.secure_url
+    });
+})

@@ -3,9 +3,12 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import {
   deleteRoomEventHandler,
+  joinRoomEventHandler,
   newMessageEventHandler,
+  newMessageForRoomHandler,
   newRoomCreateEventHandler,
   onlineUsersEventHandler,
+  removeRoomEventHandler,
   updateRoomEventHandler,
 } from "./wssMessageUtil";
 
@@ -20,6 +23,9 @@ const handlers = {
   newRoomCreateEvent: (e) => newRoomCreateEventHandler(e.payload),
   updateRoomEvent: (e) => updateRoomEventHandler(e.payload),
   deleteRoomEvent: (e) => deleteRoomEventHandler(e.payload),
+  removeRoomEvent: (e) => removeRoomEventHandler(e.payload),
+  joinRoomEvent: (e) => joinRoomEventHandler(e.payload),
+  newMessageForRoom: (e) => newMessageForRoomHandler(e.payload),
   // window.dispatchEvent(new CustomEvent("ws-message", { detail: p })),
 
   // ...more
@@ -59,7 +65,7 @@ function onMessageHandler(event) {
     // window.dispatchEvent(new CustomEvent("ws-message", { detail: payload }));
 
     // handlers[payload.type]?.(payload);
-    console.log("message event : ", event)
+    console.log("message event : ", event);
     handlers[payload.type]?.(payload);
   } catch (error) {
     console.error("Invalid WS Message: ", error);

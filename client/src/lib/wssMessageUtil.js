@@ -20,7 +20,57 @@ export const newMessageEventHandler = (data) => {
     setMessages(data);
   }
 };
+export const newMessageForRoomHandler = (data) => {
+  const { setMessages, messages, setWsHandler, selectedUser, _wsHandler } =
+    useChatStore.getState();
+  const { selectedRoom } = useRoomStore.getState();
+  if (activeTab !== "room") return;
+  // if (!selectedUser) return;
+  // if (data.senderId === selectedUser._id) {
+  //   setMessages(data);
+  // }
+  if (!selectedRoom) return;
+  if (selectedRoom._id === data.roomId) {
+    setMessages(data);
+  }
+};
 export const updateRoomEventHandler = (data) => {
+  const { activeTab } = useAuthStore.getState();
+  if (activeTab !== "room") return;
+  const {
+    rooms,
+    joinedRooms,
+    selectedRoom,
+    setSelectedRoom,
+    setRooms,
+    setJoinedRooms,
+  } = useRoomStore.getState();
+  const isRoomsContain = rooms.some((room) => room._id === data._id);
+  const roomsData = isRoomsContain
+    ? [...rooms.filter((room) => room._id !== data._id), data]
+    : rooms;
+
+  if (isRoomsContain) {
+    setRooms(roomsData);
+  }
+
+  const isJoinedRoomsContain = joinedRooms.some(
+    (room) => room._id === data._id
+  );
+  const joinedRoomsData = isJoinedRoomsContain
+    ? [...joinedRooms.filter((room) => room._id !== data._id), data]
+    : joinedRooms;
+
+  if (isJoinedRoomsContain) {
+    setJoinedRooms(joinedRoomsData);
+  }
+
+  if (selectedRoom?._id === data._id) {
+    setSelectedRoom(data);
+  }
+};
+
+export const joinRoomEventHandler = (data) => {
   const { activeTab } = useAuthStore.getState();
   if (activeTab !== "room") return;
   const {
@@ -57,7 +107,6 @@ export const updateRoomEventHandler = (data) => {
 };
 export const deleteRoomEventHandler = (data) => {
   const { activeTab } = useAuthStore.getState();
-  console.log("delee", data)
   if (activeTab !== "room") return;
   const {
     rooms,
@@ -89,7 +138,39 @@ export const deleteRoomEventHandler = (data) => {
 
   if (selectedRoom?._id === data._id) {
     setSelectedRoom(null);
-    
+  }
+};
+export const removeRoomEventHandler = (data) => {
+  const { activeTab } = useAuthStore.getState();
+  const { authUser } = useAuthStore.getState();
+  if (activeTab !== "room") return;
+  const {
+    rooms,
+    joinedRooms,
+    selectedRoom,
+    setSelectedRoom,
+    setRooms,
+    setJoinedRooms,
+  } = useRoomStore.getState();
+  const isRoomsContain = rooms.some((room) => room._id === data._id);
+  const roomsData = isRoomsContain
+    ? [...rooms.filter((room) => room._id !== data._id), data]
+    : rooms;
+  if (isRoomsContain) {
+    setRooms(roomsData);
+  }
+
+  const isJoinedRoomsContain = joinedRooms.some(
+    (room) => room._id === data._id
+  );
+  const joinedRoomsData = isJoinedRoomsContain
+    ? [...joinedRooms.filter((room) => room._id !== data._id), data]
+    : joinedRooms;
+  if (isJoinedRoomsContain) {
+    setJoinedRooms(joinedRoomsData);
+  }
+  if (selectedRoom?._id === data._id) {
+    setSelectedRoom(data);
   }
 };
 export const newRoomCreateEventHandler = (data) => {

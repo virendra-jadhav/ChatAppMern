@@ -3,7 +3,7 @@ import User from "../../models/User.js";
 import Message from "../../models/Message.js";
 import cloudinary from "../../lib/cloudinary.js";
 import { getReceiverSocketId, sendToSingleUser } from "../../lib/socket-wss.js";
-import Room from "../../models/Room.js"
+import Room from "../../models/Room.js";
 
 export const getUsersForSidebar = TryCatchBlock(async (req, res) => {
   const loggedInUserId = req.user._id;
@@ -20,7 +20,7 @@ export const getUsersForSidebar = TryCatchBlock(async (req, res) => {
 export const getMessages = TryCatchBlock(async (req, res) => {
   const { userId: userToChatId } = req.params;
   const currentUserId = req.user._id;
-  
+
   const messages = await Message.find({
     $or: [
       { senderId: currentUserId, receiverId: userToChatId },
@@ -34,13 +34,12 @@ export const getMessages = TryCatchBlock(async (req, res) => {
   });
 });
 
-
 export const getMessagesForRoom = TryCatchBlock(async (req, res) => {
   const { roomId } = req.params;
   // const currentUserId = req.user._id;
-  
+
   const messages = await Message.find({
-    roomId
+    roomId,
   });
   res.status(200).json({
     success: true,
@@ -84,7 +83,6 @@ export const sendMessage = TryCatchBlock(async (req, res) => {
   });
 });
 
-
 export const sendMessageToRoom = TryCatchBlock(async (req, res) => {
   const { text, image } = req.body;
   const { roomId } = req.params;
@@ -93,11 +91,11 @@ export const sendMessageToRoom = TryCatchBlock(async (req, res) => {
   if (!text && !image) {
     throw new Error("Please send either text or image.");
   }
-  if(!roomId){
-    throw new Error("Room Id is required!")
+  if (!roomId) {
+    throw new Error("Room Id is required!");
   }
   const room = await Room.findById(roomId);
-  if(!room){
+  if (!room) {
     throw new Error("Room not found!!");
   }
   let imageUrl;
@@ -113,7 +111,7 @@ export const sendMessageToRoom = TryCatchBlock(async (req, res) => {
     image: imageUrl,
   });
   await newMessage.save();
-
+  sendMessageToRoom(room, req.user._id, "newMessageForRoom", newMessage);
   // sendToSingleUser(receiverId, "newMessage", newMessage);
   // const receiverSocketId = getReceiverSocketId(receiverId);
   // if (receiverSocketId) {

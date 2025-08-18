@@ -87,6 +87,24 @@ export function sendToSingleUser(receiverId, event, payload) {
   }
 }
 
+export function sendMessageToRoom(room, clientId, event, payload) {
+  const allClients = Array.from(userSocketMap.keys());
+  const sendToClients = allClients.map((alId) =>
+    room.users.map(
+      (userId) =>
+        userId?.toString() === alId?.toString() &&
+        alId.toString() !== clientId.toString()
+    )
+  );
+  const clients = sendToClients.map((userId) => userSocketMap.get(userId));
+
+  clients.forEach((client) => {
+    if (client && client.readyState === client.OPEN) {
+      client.send(JSON.stringify({ type: event, payload }));
+    }
+  });
+}
+
 export function createRoomMessageToAllUser(room, event, payload) {
   // Get all connected userIds
   const allClients = Array.from(userSocketMap.keys());
@@ -113,7 +131,7 @@ export function updateRoomEvent(clientId, event, payload) {
   const allClients = Array.from(userSocketMap.keys());
 
   const clients = allClients
-    .filter((userId) => userId !== clientId)
+    .filter((userId) => userId !== clientId?.toString())
     .map((client) => userSocketMap.get(client));
   // Send event
   clients.forEach((client) => {
@@ -135,4 +153,31 @@ export function deleteRoomEvent(rooms, event, payload) {
   });
 }
 
+export function removeRoomEvent(clientId, event, payload) {
+  // Get all connected userIds
+  const allClients = Array.from(userSocketMap.keys());
+
+  const clients = allClients
+    .filter((userId) => userId !== clientId?.toString())
+    .map((client) => userSocketMap.get(client));
+  // Send event
+  clients.forEach((client) => {
+    if (client && client.readyState === client.OPEN) {
+      client.send(JSON.stringify({ type: event, payload }));
+    }
+  });
+}
+
+export function joinRoomEvent(rooms, event, payload) {
+  // Get all connected userIds
+  const allClients = Array.from(userSocketMap.keys());
+
+  const clients = allClients.map((client) => userSocketMap.get(client));
+  // Send event
+  clients.forEach((client) => {
+    if (client && client.readyState === client.OPEN) {
+      client.send(JSON.stringify({ type: event, payload }));
+    }
+  });
+}
 export { wss, app, server };

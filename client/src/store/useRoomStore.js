@@ -14,14 +14,13 @@ export const useRoomStore = create((set, get) => ({
   setRooms: (rooms) => {
     set({ rooms: rooms });
   },
-  setJoinedRooms: (joinedRooms)=> {
-   
-    set({joinedRooms: joinedRooms})
+  setJoinedRooms: (joinedRooms) => {
+    set({ joinedRooms: joinedRooms });
   },
-  
+
   deleteRoom: async (roomId) => {
     try {
-      const res = await axiosService.delete(`/rooms/${roomId}/remove`);
+      const res = await axiosService.delete(`/rooms/${roomId}`);
       if (!res.success) throw new Error({ message: res.message });
 
       set({ selectedRoom: null, rooms: res.rooms });

@@ -21,9 +21,10 @@ export const newMessageEventHandler = (data) => {
   }
 };
 export const newMessageForRoomHandler = (data) => {
-  const { setMessages, messages, setWsHandler, selectedUser, _wsHandler } =
-    useChatStore.getState();
+  const { setMessages } = useChatStore.getState();
+  const { activeTab } = useAuthStore.getState();
   const { selectedRoom } = useRoomStore.getState();
+
   if (activeTab !== "room") return;
   // if (!selectedUser) return;
   // if (data.senderId === selectedUser._id) {
@@ -176,7 +177,6 @@ export const removeRoomEventHandler = (data) => {
 export const newRoomCreateEventHandler = (data) => {
   // const { setMessages, messages, setWsHandler, selectedUser, _wsHandler } =
   // useChatStore.getState();
-  console.log("new room create event : ", data);
   const { setRooms, rooms } = useRoomStore.getState();
   const { activeTab } = useAuthStore.getState();
   if (activeTab !== "room") return;

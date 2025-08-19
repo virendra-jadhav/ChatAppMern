@@ -87,17 +87,19 @@ export function sendToSingleUser(receiverId, event, payload) {
   }
 }
 
-export function sendMessageToRoom(room, clientId, event, payload) {
+export function sendMessageToRoomEvent(room, clientId, event, payload) {
   const allClients = Array.from(userSocketMap.keys());
+
   const sendToClients = allClients.map((alId) =>
-    room.users.map(
+    room.users.filter(
       (userId) =>
         userId?.toString() === alId?.toString() &&
         alId.toString() !== clientId.toString()
     )
   );
-  const clients = sendToClients.map((userId) => userSocketMap.get(userId));
-
+  const clients = sendToClients.map((userId) =>
+    userSocketMap.get(userId?.toString())
+  );
   clients.forEach((client) => {
     if (client && client.readyState === client.OPEN) {
       client.send(JSON.stringify({ type: event, payload }));

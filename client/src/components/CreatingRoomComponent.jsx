@@ -8,32 +8,29 @@ const CreatingRoomComponent = ({ setIsCreatingRoom }) => {
   const [roomDescription, setRoomDescription] = useState("");
   const [logo, setLogo] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const {uploadFile, authUser} = useAuthStore()
-  const {createRoom} = useRoomStore();
+  const { uploadFile, authUser } = useAuthStore();
+  const { createRoom } = useRoomStore();
 
   const handleLogoUpload = async (event) => {
-     const file = event.target.files[0];
+    const file = event.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
     formData.append("file", file);
     const res = await uploadFile(formData);
-    if(res?.success){
-        setLogo(res.fileUrl);
+    if (res?.success) {
+      setLogo(res.fileUrl);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsCreating(true);
-    console.log("name", roomName)
-    console.log("logo", logo)
-    console.log("desc", roomDescription)
     let data = {
-        name: roomName,
-        logo,
-        description: roomDescription
-    }
+      name: roomName,
+      logo,
+      description: roomDescription,
+    };
     await createRoom(data);
     setIsCreating(false);
     setIsCreatingRoom(false);

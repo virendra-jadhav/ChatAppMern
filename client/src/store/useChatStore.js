@@ -52,7 +52,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
   sendMessageToRoom: async (roomId, messageData) => {
-   const {  messages } = get();
+    const { messages } = get();
     try {
       const res = await axiosService.post(
         `messages/send/room/${roomId}`,
@@ -116,20 +116,19 @@ export const useChatStore = create((set, get) => ({
   setWsHandler: (handler) => {
     set({ _wsHandler: handler });
   },
-   getRoomMessages: async (roomId) => {
-    set({isRoomMessagesLoading: true})
-    try{
+  getRoomMessages: async (roomId) => {
+    set({ isRoomMessagesLoading: true });
+    try {
       const res = await axiosService.get(`/messages/room/${roomId}`);
-      console.log("res", res)
       if (!res.success) throw new Error({ message: res.message });
-      
-      set({ messages: res.messages});
+
+      set({ messages: res.messages });
       // toast.success("");
-    }catch(error){
+    } catch (error) {
       console.error("error ", error);
       toast.error(`Error while getting room messages : ${error.message}`);
-    } finally{
-      set({isRoomMessagesLoading: false})
+    } finally {
+      set({ isRoomMessagesLoading: false });
     }
   },
 }));

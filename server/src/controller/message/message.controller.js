@@ -2,7 +2,11 @@ import TryCatchBlock from "../../helpers/try-catch-middleware.js";
 import User from "../../models/User.js";
 import Message from "../../models/Message.js";
 import cloudinary from "../../lib/cloudinary.js";
-import { getReceiverSocketId, sendToSingleUser } from "../../lib/socket-wss.js";
+import {
+  getReceiverSocketId,
+  sendMessageToRoomEvent,
+  sendToSingleUser,
+} from "../../lib/socket-wss.js";
 import Room from "../../models/Room.js";
 
 export const getUsersForSidebar = TryCatchBlock(async (req, res) => {
@@ -87,7 +91,6 @@ export const sendMessageToRoom = TryCatchBlock(async (req, res) => {
   const { text, image } = req.body;
   const { roomId } = req.params;
   const senderId = req.user._id;
-
   if (!text && !image) {
     throw new Error("Please send either text or image.");
   }
@@ -111,7 +114,7 @@ export const sendMessageToRoom = TryCatchBlock(async (req, res) => {
     image: imageUrl,
   });
   await newMessage.save();
-  sendMessageToRoom(room, req.user._id, "newMessageForRoom", newMessage);
+  sendMessageToRoomEvent(room, req.user._id, "newMessageForRoom", newMessage);
   // sendToSingleUser(receiverId, "newMessage", newMessage);
   // const receiverSocketId = getReceiverSocketId(receiverId);
   // if (receiverSocketId) {

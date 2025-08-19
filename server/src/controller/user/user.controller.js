@@ -27,15 +27,14 @@ export const uploadProfilePic = TryCatchBlock(async (req, res) => {
 });
 
 export const uploadImage = TryCatchBlock(async (req, res) => {
-  console.log("inside controller", req.file)
-   if (!req.file) {
-        throw new Error("No file uploaded!");
-    }
-    const uploadFileResponse = await uploadToCloudinary(req.file.buffer);
+  if (!req.file) {
+    throw new Error("No file uploaded!");
+  }
+  const uploadFileResponse = await uploadToCloudinary(req.file.buffer);
 
-    res.status(200).json({
-        success: true,
-        message: "Logo updated successfully!!",
-        fileUrl: uploadFileResponse.secure_url
-    });
-})
+  res.status(200).json({
+    success: true,
+    message: "Logo updated successfully!!",
+    fileUrl: uploadFileResponse.secure_url,
+  });
+});

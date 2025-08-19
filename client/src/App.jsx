@@ -11,7 +11,7 @@ import { Loader } from "lucide-react";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import ChatContainer from "./components/ChatContainer";
-import RoomContainer from "./components/RoomContainer"
+import RoomContainer from "./components/RoomContainer";
 import ExploreRoomContainer from "./components/ExploreRoomContainer";
 import RoomProfile from "./components/RoomProfile";
 
@@ -31,7 +31,7 @@ const App = () => {
       </div>
     );
   return (
-    <div data-theme={theme} className="w-screen h-full">
+    <div data-theme={theme} className="w-screen h-screen flex-col flex">
       <Navbar />
       <Routes>
         <Route
@@ -41,8 +41,8 @@ const App = () => {
           <Route path="/chat" element={<ChatContainer />} />
           <Route path="/room/chat" element={<RoomContainer />} />
           <Route path="/room/explore" element={<ExploreRoomContainer />} />
-          <Route path="/room/profile" element={<RoomProfile />} /> 
-          </Route>
+          <Route path="/room/profile" element={<RoomProfile />} />
+        </Route>
         <Route
           path="/signup"
           element={!authUser ? <Signup /> : <Navigate to="/" />}
@@ -56,7 +56,6 @@ const App = () => {
           path="/profile"
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
-        
       </Routes>
       <Toaster />
     </div>

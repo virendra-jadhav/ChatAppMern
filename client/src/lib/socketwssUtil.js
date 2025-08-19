@@ -65,7 +65,7 @@ function onMessageHandler(event) {
     // window.dispatchEvent(new CustomEvent("ws-message", { detail: payload }));
 
     // handlers[payload.type]?.(payload);
-    console.log("message event : ", event);
+    // console.log("message event : ", event);
     handlers[payload.type]?.(payload);
   } catch (error) {
     console.error("Invalid WS Message: ", error);

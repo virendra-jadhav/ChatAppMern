@@ -38,7 +38,7 @@ const Sidebar = () => {
       className="
       h-[calc(100vh-5rem)]   /* lock to remaining screen height */
     overflow-y-auto        /* enable scrolling */
-    w-full sm:w-20 lg:w-72 
+    w-screen sm:w-20 lg:w-72 
     border-r border-base-300 
     flex flex-col 
     transition-all duration-200

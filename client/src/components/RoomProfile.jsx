@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useRoomStore } from "../store/useRoomStore";
-import { Crown, ImageIcon, LogOut, Trash2, User } from "lucide-react";
+import { Crown, ImageIcon, LogOut, MoveLeft, Trash2, User } from "lucide-react";
 import toast from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const RoomProfilePage = () => {
   const { selectedRoom, updateRoom, leaveRoom, deleteRoom } = useRoomStore();
   const { authUser, uploadFile, setActiveTab } = useAuthStore(); // Current logged-in user
- 
 
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(selectedRoom?.name || "");
@@ -21,9 +20,11 @@ const RoomProfilePage = () => {
   const [isLogoUploading, setIsLogoUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = selectedRoom?.admins.some((user) => user._id === authUser?._id);
+  const isAdmin = selectedRoom?.admins.some(
+    (user) => user._id === authUser?._id
+  );
   const navigate = useNavigate();
-   if(!selectedRoom) return;
+  if (!selectedRoom) return;
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
@@ -36,12 +37,12 @@ const RoomProfilePage = () => {
     if (res?.success) {
       setLogo(res.fileUrl);
     }
-    setIsLogoUploading(false)
+    setIsLogoUploading(false);
   };
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if(isLogoUploading){
-      toast.error("Logo is Uploading, Please Wait!!")
+    if (isLogoUploading) {
+      toast.error("Logo is Uploading, Please Wait!!");
       return;
     }
     setLoading(true);
@@ -50,16 +51,16 @@ const RoomProfilePage = () => {
       description,
       logo,
       users: selectedRoom.users,
-      admins: selectedRoom.admins
-    }
+      admins: selectedRoom.admins,
+    };
     await updateRoom(selectedRoom._id, data);
     setLoading(false);
     setIsEditing(false);
   };
   const handleLeave = async () => {
-    await leaveRoom(selectedRoom?._id)
-    navigate("/")
-    setActiveTab("room")
+    await leaveRoom(selectedRoom?._id);
+    navigate("/");
+    setActiveTab("room");
     // await leaveRoom(room._id);
     // setViewingRoom(null);
   };
@@ -68,11 +69,13 @@ const RoomProfilePage = () => {
   const handleDelete = async () => {
     // await deleteRoom(room._id);
     // setViewingRoom(null);
-    await deleteRoom(selectedRoom?._id)
-    navigate("/")
-    setActiveTab("room")
+    await deleteRoom(selectedRoom?._id);
+    navigate("/");
+    setActiveTab("room");
   };
-  
+  const handleBack = () => {
+    navigate("/room/chat");
+  };
 
   return (
     <div className="w-full h-full pt-5 overflow-y-auto">
@@ -173,18 +176,22 @@ const RoomProfilePage = () => {
                     </div>
                   </div>
 
-                  {selectedRoom?.admins.some(admin => admin._id === u._id) && (
+                  {selectedRoom?.admins.some(
+                    (admin) => admin._id === u._id
+                  ) && (
                     <span className="text-success flex items-center gap-1 text-sm font-medium">
                       <Crown className="w-4 h-4" /> Admin
                     </span>
                   )}
-                  
                 </div>
               ))}
             </div>
           </div>
           {/* Actions */}
-          <div className="flex justify-center gap-5 mt-6">
+          <div className="flex justify-center gap-5 mt-6 flex-wrap">
+            <button onClick={handleBack} className="btn btn-warning gap-2">
+              <MoveLeft className="w-4 h-4" /> Back
+            </button>
             {!isAdmin && (
               <button onClick={handleLeave} className="btn btn-warning gap-2">
                 <LogOut className="w-4 h-4" /> Leave Room

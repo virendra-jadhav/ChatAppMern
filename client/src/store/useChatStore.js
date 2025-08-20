@@ -119,6 +119,10 @@ export const useChatStore = create((set, get) => ({
   getRoomMessages: async (roomId) => {
     set({ isRoomMessagesLoading: true });
     try {
+      if (!roomId) {
+        toast.error("Cannot get messages for room");
+        return;
+      }
       const res = await axiosService.get(`/messages/room/${roomId}`);
       if (!res.success) throw new Error({ message: res.message });
 

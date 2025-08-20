@@ -19,7 +19,7 @@ const Home = () => {
 
   // Desktop view: always show sidebar + right side content
   // Mobile view: show sidebar OR content (never both)
-  const showSidebarMobile = !selectedUser && !isExploringRoom && !selectedRoom;
+  const isAnySelected = !selectedUser && !isExploringRoom && !selectedRoom;
 
   return (
     <div className="h-[calc(100vh-10rem)] bg-base-200 mt-20">
@@ -29,7 +29,7 @@ const Home = () => {
             {/* Sidebar */}
             <div
               className={`
-                ${showSidebarMobile ? "block" : "hidden"} 
+                ${isAnySelected ? "block" : "hidden"} 
                 sm:block 
               `}
             >
@@ -39,7 +39,7 @@ const Home = () => {
             {/* Main content */}
             <div
               className={`
-                ${showSidebarMobile ? "hidden" : "flex"}
+                ${isAnySelected ? "hidden" : "flex"}
                 flex-1
               `}
             >

@@ -29,7 +29,9 @@ const ChatContainer = () => {
   };
 
   useEffect(() => {
-    getRoomMessages(selectedRoom?._id);
+    if (selectedRoom) {
+      getRoomMessages(selectedRoom?._id);
+    }
 
     // subscribeToMessages();
 

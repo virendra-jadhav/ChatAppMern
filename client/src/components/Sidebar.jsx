@@ -31,6 +31,11 @@ const Sidebar = () => {
     : users;
 
   if (isUsersLoading) return <SidebarSkeleton />;
+  const handleReset = () => {
+    setSelectedUser(null);
+    setSelectedRoom(null);
+    setIsExploringRoom(false);
+  };
 
   return (
     // <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
@@ -47,7 +52,10 @@ const Sidebar = () => {
       <div className="border-b border-base-300 w-full">
         <div className="flex sm:flex-col lg:flex-row">
           <button
-            onClick={() => setActiveTab("chat")}
+            onClick={() => {
+              setActiveTab("chat");
+              handleReset();
+            }}
             className={`flex-1 flex items-center justify-center gap-2 py-3 transition-colors ${
               activeTab === "chat"
                 ? "border-b-2 border-primary text-primary font-semibold"
@@ -58,7 +66,10 @@ const Sidebar = () => {
             <span>Chat</span>
           </button>
           <button
-            onClick={() => setActiveTab("room")}
+            onClick={() => {
+              setActiveTab("room");
+              handleReset();
+            }}
             className={`flex-1 flex items-center justify-center gap-2 py-3 transition-colors ${
               activeTab === "room"
                 ? "border-b-2 border-primary text-primary font-semibold"

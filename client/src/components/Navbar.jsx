@@ -1,10 +1,20 @@
 import React from "react";
-import { LogOut, MessageSquare, Settings, User } from "lucide-react";
+import {
+  HammerIcon,
+  LogOut,
+  Menu,
+  MessageSquare,
+  Settings,
+  User,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 
 const Navbar = () => {
   const { authUser, logout } = useAuthStore();
+  const mobileNavbar = () => {
+    return <div></div>;
+  };
   return (
     <div
       className="bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 
@@ -53,7 +63,7 @@ const Navbar = () => {
               <div className="dropdown dropdown-end dropdown-hover">
                 <label
                   tabIndex={0}
-                  className="btn btn-sm gap-2 cursor-pointer min-w-[100px]"
+                  className="hidden sm:flex justify-center items-center btn btn-sm gap-2 cursor-pointer min-w-[200px]"
                 >
                   <User className="size-5" />
                   {/* Username */}
@@ -62,6 +72,12 @@ const Navbar = () => {
                       ? authUser.fullName.trim().substring(0, 10) + "..."
                       : authUser.fullName.trim()}
                   </span>
+                </label>
+                <label
+                  tabIndex={0}
+                  className="sm:hidden btn btn-sm gap-2 cursor-pointer min-w-[100px]"
+                >
+                  <Menu className="size-5" />
                 </label>
                 <ul
                   tabIndex={0}

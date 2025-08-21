@@ -46,6 +46,14 @@ const Home = () => {
               {/* {mainContent} */}
               <Outlet />
             </div>
+            <div
+              className={` hidden
+                ${isAnySelected ? "sm:flex" : "sm:hidden"}
+                flex-1
+              `}
+            >
+              <NoChatSelected />
+            </div>
           </div>
         </div>
       </div>

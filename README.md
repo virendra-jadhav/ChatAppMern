@@ -46,7 +46,7 @@ root/
 
 ## 🛠 Tech Stack
 
-**Frontend**:  
+**Frontend**:   
 - React (Vite)  
 - TailwindCSS  
 - DaisyUI  

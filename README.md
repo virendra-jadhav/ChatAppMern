@@ -9,7 +9,7 @@ Live App : https://chatappviren.onrender.com
 
 ---
 
-## 📂 Project Structure 
+## 📂 Project Structure
 
 ```
 root/
@@ -50,8 +50,9 @@ root/
 - React (Vite)  
 - TailwindCSS  
 - DaisyUI  
-- Zustand  
+- Zustand
 
+  
 **Backend**:  
 - Express  
 - MongoDB & Mongoose  
